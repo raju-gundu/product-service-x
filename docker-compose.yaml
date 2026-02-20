@@ -1,35 +1,33 @@
 services:
-  postgres:
-    container_name: product_postgres
-    image: postgres:14.21-alpine3.23
+  mysql:
+    container_name: product_mysql
+    image: mysql
     environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin
-      PGDATA: /data/postgres
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_DATABASE: product
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
     volumes:
-      - postgres:/data/postgres
+      - mysql_data:/var/lib/mysql
     ports:
-      - 5433:5432
+      - 3306:3306
     networks:
-      - postgres
+      - mysql
     restart: unless-stopped
-  pgadmin:
-    container_name: product_pgadmin
-    image: dpage/pgadmin4
+  phpmyadmin:
+    container_name: product_phpmyadmin
+    image: phpmyadmin/phpmyadmin
     environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
-      PGADMIN_CONFIG_SERVER_MODE: 'False'
-    volumes:
-      - pgadmin:/var/lib/pgadmin
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: admin
     ports:
-      - "5051:80"
+      - 8484:80
     networks:
-      - postgres
+      - mysql
     restart: unless-stopped
 networks:
-  postgres:
+  mysql:
     driver: bridge
 volumes:
-  postgres:
-  pgadmin:
+  mysql_data:
